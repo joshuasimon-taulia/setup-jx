@@ -1,0 +1,18 @@
+name: "jx tool installer"
+description: "Install a specific version of jx binary. Acceptable values are latest or any semantic version string like 1.15.0"
+inputs:
+   version:
+      description: "Version of jx"
+      required: false
+      default: "latest"
+   token:
+      description: GitHub token. Required only if 'version' == 'latest'
+      required: false
+outputs:
+   jx-path:
+      description: "Path to the cached jx binary"
+branding:
+   color: "blue"
+runs:
+   using: "node16"
+   main: "lib/index.js"
