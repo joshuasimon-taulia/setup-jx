@@ -1,0 +1,60 @@
+name: Integration tests
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  integration-tests:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    env:
+      VER1: "3.10.134"
+      VER2: "3.8.0"
+      WITHOUT_V_PREFIX: "3.5.0"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: npm build
+        id: npm-build
+        run: |
+          npm install
+          npm run build
+      - name: Setup jx
+        uses: ./
+        with:
+          version: v${{ env.VER1 }}
+      - name: Validate jx VER1
+        run: |
+          if [[ $(jx version) != *$VER1* ]]; then
+            echo "JX VERSION INCORRECT: JX VERSION DOES NOT CONTAIN $VER1"
+            echo "JX VERSION OUTPUT: $(jx version)"
+            exit 1
+          else
+            echo "JX VERSION $VER1 INSTALLED SUCCESSFULLY"
+          fi
+      - name: Setup jx VER2
+        uses: ./
+        with:
+          version: v${{ env.VER2 }}
+      - name: Validate VER2
+        run: |
+          if [[ $(jx version) != *$VER2* ]]; then
+            echo "JX VERSION INCORRECT: JX VERSION DOES NOT CONTAIN $VER2"
+            echo "JX VERSION OUTPUT: $(jx version)"
+            exit 1
+          else
+            echo "JX VERSION $VER2 INSTALLED SUCCESSFULLY"
+          fi
+      - name: Setup jx with no v prefix in version
+        uses: ./
+        with:
+          version: ${{ env.WITHOUT_V_PREFIX }}
+      - name: Validate without v prefix in version
+        run: |
+          if [[ $(jx version) != *$WITHOUT_V_PREFIX* ]]; then
+            echo "JX VERSION INCORRECT: JX VERSION DOES NOT CONTAIN $WITHOUT_V_PREFIX"
+            echo "JX VERSION OUTPUT: $(jx version)"
+            exit 1
+          else
+            echo "JX VERSION $WITHOUT_V_PREFIX INSTALLED SUCCESSFULLY"
+          fi
